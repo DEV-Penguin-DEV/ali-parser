@@ -1,0 +1,7 @@
+excel/
+driver/
+excel-done/
+jsons-base/
+jsons-done/
+__pycache__/
+.idea
