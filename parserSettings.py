@@ -7,7 +7,7 @@ MAIN_PAGE = 'https://best.aliexpress.com/?lan=en&spm=a2g0o.detail.1000002.1.3ea2
 MIN_RATING = 4.5
 MIN_SOLDS = 200
 MIN_MONTH_SOLDS = 150
-DELIVERY_LIMIT = 37
+DELIVERY_LIMIT = 53
 
 # GENERAL CLASSES
 SHIP_TO_ID = 'switcher-info'

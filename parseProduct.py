@@ -22,6 +22,8 @@ def getDeliveryPrice(deliveryLines):
             return float(deliveryLines[0].text.split(': ')[1].split('CHF ')[1])
         if (':' in deliveryLines[0].text):
             return float(deliveryLines[0].text.split(':')[1].split('CHF ')[1])
+        if (':' in deliveryLines[1].text):
+            return float(deliveryLines[1].text.split(':')[1].split('CHF ')[1])
         return 0 if deliveryLines[0].text == 'Free Shipping ' else float(deliveryLines[0].text.split('CHF ')[1])
     if (len(deliveryLines) == 2):
         print(Back.GREEN + 'Hallo' + Back.RESET)
@@ -41,6 +43,16 @@ def getDeliveryDuraction(deliveryLines):
         return False
     if (len(deliveryLines) == 5):
         today = datetime.date.today()
+
+        if 'on' in deliveryLines[3].text and not ('From' in deliveryLines[3].text):
+            try:
+                deliveryDate = datetime.datetime.strptime(
+                    deliveryLines[3].text.split('on ')[1] + ', 2023', "%b %d , %Y")
+            except ValueError:
+                deliveryDate = datetime.datetime.strptime(
+                    deliveryLines[3].text.split('on ')[1].split(' ,')[0] + ', 2023', "%b %d, %Y")
+            return (deliveryDate.date() - today).days
+
         deliveryDate = datetime.datetime.strptime(
             deliveryLines[1].text.split('on ')[1] + ', 2023', "%b %d , %Y")
         return (deliveryDate.date() - today).days
@@ -71,6 +83,16 @@ def getDeliveryDuraction(deliveryLines):
         except ValueError:
             deliveryDate = datetime.datetime.strptime(
                 deliveryLines[len(deliveryLines) - 1].text.split('on ')[1].split(' ,')[0] + ', 2023', "%b %d, %Y")
+        return (deliveryDate.date() - today).days
+
+    if 'on' in deliveryLines[len(deliveryLines) - 2].text:
+        today = datetime.date.today()
+        try:
+            deliveryDate = datetime.datetime.strptime(
+                deliveryLines[len(deliveryLines) - 2].text.split('on ')[1] + ', 2023', "%b %d , %Y")
+        except ValueError:
+            deliveryDate = datetime.datetime.strptime(
+                deliveryLines[len(deliveryLines) - 2].text.split('on ')[1].split(' ,')[0] + ', 2023', "%b %d, %Y")
         return (deliveryDate.date() - today).days
 
     today = datetime.date.today()
@@ -115,10 +137,14 @@ def parseProduct(driver, productObj):
         return False
 
     try:
+        i = 0
         while len(driver.find_elements(
                 By.CLASS_NAME, MONTH_SOLDS_CLASS)) - 1 < MONTH_SOLDS_INDEX:
+            if (i > 3):
+                return False
             time.sleep(10)
             print('noooooonononoon')
+            i += 1
         time.sleep(2)
         monthSolds = driver.find_elements(
             By.CLASS_NAME, MONTH_SOLDS_CLASS)[MONTH_SOLDS_INDEX].find_element(
